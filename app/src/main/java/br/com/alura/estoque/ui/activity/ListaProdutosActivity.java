@@ -6,20 +6,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
 import br.com.alura.estoque.R;
 import br.com.alura.estoque.asynctask.BaseAsyncTask;
 import br.com.alura.estoque.database.EstoqueDatabase;
 import br.com.alura.estoque.database.dao.ProdutoDAO;
 import br.com.alura.estoque.model.Produto;
-import br.com.alura.estoque.retrofit.EstoqueRetrofit;
-import br.com.alura.estoque.retrofit.service.ProdutoService;
+import br.com.alura.estoque.repository.ProdutoRepository;
 import br.com.alura.estoque.ui.dialog.EditaProdutoDialog;
 import br.com.alura.estoque.ui.dialog.SalvaProdutoDialog;
 import br.com.alura.estoque.ui.recyclerview.adapter.ListaProdutosAdapter;
-import retrofit2.Call;
 
 public class ListaProdutosActivity extends AppCompatActivity {
 
@@ -39,19 +34,8 @@ public class ListaProdutosActivity extends AppCompatActivity {
         EstoqueDatabase db = EstoqueDatabase.getInstance(this);
         dao = db.getProdutoDAO();
 
-        buscaProdutos();
-    }
-
-    private void buscaProdutos() {
-
-        ProdutoService service = new EstoqueRetrofit().getProdutoService();
-        Call<List<Produto>> call = service.buscaTodos();
-
-        new BaseAsyncTask< >()
-
-//        new BaseAsyncTask<>(dao::buscaTodos,
-//                resultado -> adapter.atualiza(resultado))
-//                .execute();
+        ProdutoRepository repository = new ProdutoRepository(dao);
+        repository.buscaProdutos(adapter::atualiza);
     }
 
     private void configuraListaProdutos() {
